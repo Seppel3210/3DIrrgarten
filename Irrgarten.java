@@ -30,27 +30,19 @@ public class Irrgarten {
     }
 
     private void generieren(int x, int z) {
-        ArrayDeque<Vektor2> queue = new ArrayDeque<>();
-        queue.push(new Vektor2(x, z));
+        ArrayDeque<VertagtePosition> positionQueue = new ArrayDeque<>();
         entferne(new Vektor2(x, z));
-        while (!queue.isEmpty()) {
-            Vektor2 position = queue.pop();
-            List<Vektor2> richtungen = Vektor2.zufaelligeRichtungen();
-            for (int i = richtungen.size() - 1; i >= 0; i--) {
-                if (istSackgasse(position, richtungen.get(i))) {
-                    richtungen.remove(i);
+        for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
+            positionQueue.push(new VertagtePosition(new Vektor2(x, z), richtung));
+        }
+        while (!positionQueue.isEmpty()) {
+            VertagtePosition vertagt = positionQueue.poll();
+            if (!istSackgasse(vertagt.position, vertagt.richtung)) {
+                Vektor2 neuePosition = vertagt.neuePosition();
+                entferne(neuePosition);
+                for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
+                    positionQueue.push(new VertagtePosition(neuePosition, richtung));
                 }
-            }
-
-            if (richtungen.size() > 0) {
-                Vektor2 neuePosition = position.summe(richtungen.remove(0));
-                entferne(neuePosition);
-                queue.push(neuePosition);
-            }
-            while (richtungen.size() > 0 && Math.random() < 1.0) {
-                Vektor2 neuePosition = position.summe(richtungen.remove(0));
-                entferne(neuePosition);
-                queue.push(neuePosition);
             }
         }
     }
