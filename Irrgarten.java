@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Irrgarten {
-    public static double KANTENLAENGE = 50;
+    public static double KANTENLAENGE = 80;
     private final GLObjekt[][] felder;
+    private Vektor2 letztesRechts = null;
 
     public Irrgarten(int tiefe, int breite) {
         felder = new GLObjekt[tiefe][breite];
@@ -31,6 +32,7 @@ public class Irrgarten {
     }
 
     private void generieren(int x, int z) {
+        entferne(new Vektor2(0, 1));
         ArrayDeque<VertagtePosition> positionQueue = new ArrayDeque<>();
         entferne(new Vektor2(x, z));
         for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
@@ -41,7 +43,10 @@ public class Irrgarten {
             if (!istSackgasse(vertagt.position, vertagt.richtung)) {
                 Vektor2 neuePosition = vertagt.neuePosition();
                 entferne(neuePosition);
-                //Sys.warte(50);
+                if (neuePosition.x == breite() - 2) {
+                    letztesRechts = neuePosition;
+                }
+                //Sys.warte(40);
                 for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
                     // 0 => komplette Breitensuche
                     // 1 => komplette Tiefensuche
@@ -53,6 +58,7 @@ public class Irrgarten {
                 }
             }
         }
+        entferne(letztesRechts.summe(new Vektor2(1, 0)));
     }
 
     private boolean istSackgasse(Vektor2 position, Vektor2 richtung) {
