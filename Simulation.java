@@ -20,10 +20,10 @@ public class Simulation {
 
         steuerung = new Steuerung();
 
-        irrgarten = new Irrgarten(50, 50);
         spieler = new GLEntwicklerkamera(800, 600);
         spieler.setzePosition(0, 5000, 0);
         spieler.setzeBlickpunkt(0, 0, -100);
+        irrgarten = new Irrgarten(100, 100);
     }
 
     public void starteSimulation() {

@@ -1,12 +1,13 @@
 import GLOOP.GLObjekt;
 import GLOOP.GLWuerfel;
+import GLOOP.Sys;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Irrgarten {
-    public static double KANTENLAENGE = 200;
+    public static double KANTENLAENGE = 50;
     private final GLObjekt[][] felder;
 
     public Irrgarten(int tiefe, int breite) {
@@ -40,8 +41,15 @@ public class Irrgarten {
             if (!istSackgasse(vertagt.position, vertagt.richtung)) {
                 Vektor2 neuePosition = vertagt.neuePosition();
                 entferne(neuePosition);
+                //Sys.warte(50);
                 for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
-                    positionQueue.push(new VertagtePosition(neuePosition, richtung));
+                    // 0 => komplette Breitensuche
+                    // 1 => komplette Tiefensuche
+                    if (Math.random() < 1.0) {
+                        positionQueue.addFirst(new VertagtePosition(neuePosition, richtung));
+                    } else {
+                        positionQueue.addLast(new VertagtePosition(neuePosition, richtung));
+                    }
                 }
             }
         }
