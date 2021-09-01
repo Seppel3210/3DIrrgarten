@@ -5,8 +5,8 @@ import java.util.List;
 public class Vektor2 {
     public int x;
     public int z;
-    public static Vektor2 NORD = new Vektor2(0, 1);
-    public static Vektor2 SUED = new Vektor2(0, -1);
+    public static Vektor2 NORD = new Vektor2(0, -1);
+    public static Vektor2 SUED = new Vektor2(0, 1);
     public static Vektor2 OST = new Vektor2(1, 0);
     public static Vektor2 WEST = new Vektor2(-1, 0);
 
