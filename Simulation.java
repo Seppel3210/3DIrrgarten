@@ -39,6 +39,7 @@ public class Simulation {
                 spieler.linksrechts(false);
             }
             spieler.animiere();
+            irrgarten.animiereElemente();
             Sys.warte();
         }
         Sys.beenden();

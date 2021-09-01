@@ -1,13 +1,14 @@
 import GLOOP.GLTextur;
+import GLOOP.Sys;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Irrgarten {
-    public static double KANTENLAENGE = 30;
+    public static double KANTENLAENGE = 50;
     private final Element[][] felder;
-
+    private Element[][] sonderElemente;
     GLTextur bodenTex;
 
     public Irrgarten(int tiefe, int breite) {
@@ -25,6 +26,27 @@ public class Irrgarten {
             }
         }
         generieren(1, 1);
+        elemente(50);
+    }
+
+    public void animiereElemente() {
+        for (int z = 0; z < tiefe(); z++) {
+            for (int x = 0; x < breite(); x++) {
+                if (gibElement(x, z) instanceof AniElement) {
+                    ((AniElement) gibElement(x, z)).animiere();
+                }
+            }
+        }
+    }
+
+    public void elemente(int i) {
+        for (; i > 0; i--) {
+            int x = (int) (Math.random() * breite() - 2) + 1;
+            int z = (int) (Math.random() * tiefe() - 2) + 1;
+            if (gibElement(x, z) instanceof Block) {
+                setzeElement(x, z, ((Block) gibElement(x, z)).ersetzeAw());
+            }
+        }
     }
 
     public int breite() {
@@ -76,15 +98,11 @@ public class Irrgarten {
         ueberpruefeRichtungen.add(richtung.rotiereLinks().summe(richtung)); // Diagonal
         ueberpruefeRichtungen.add(richtung.rotiereRechts().summe(richtung)); // Diagonal
         for (Vektor2 r : ueberpruefeRichtungen) {
-            if (!imFeld(neuePosition.summe(r)) || !besetzt(neuePosition.summe(r))) {
+            if (!imFeld(neuePosition.summe(r)) || gibElement(neuePosition.summe(r)).gibBetretbar()) {
                 return true;
             }
         }
         return false;
-    }
-
-    public boolean besetzt(Vektor2 position) {
-        return !gibElement(position).gibBetretbar();
     }
 
     public void entferne(Vektor2 position) {
@@ -93,19 +111,31 @@ public class Irrgarten {
         if (imFeld(position)) {
             if (felder[z][x] != null && felder[z][x] instanceof Block) {
                 if (bodenTex == null) {
-                    felder[z][x] = ((Block) felder[z][x]).ersetze();
+                    felder[z][x] = ((Block) felder[z][x]).ersetzeBp();
                 } else {
-                    felder[z][x] = ((Block) felder[z][x]).ersetze(bodenTex);
+                    felder[z][x] = ((Block) felder[z][x]).ersetzeBp(bodenTex);
                 }
             }
         }
     }
 
-    public boolean imFeld(Vektor2 position) {
+    private boolean imFeld(Vektor2 position) {
         return position.x >= 0 && position.x < breite() && position.z >= 0 && position.z < tiefe();
     }
 
     public Element gibElement(Vektor2 position) {
-        return felder[position.z][position.x];
+        return gibElement(position.x, position.z);
+    }
+
+    public Element gibElement(int x, int z) {
+        return felder[z][x];
+    }
+
+    public void setzeElement(Vektor2 position, Element element) {
+        setzeElement(position.x, position.z, element);
+    }
+
+    public void setzeElement(int x, int z, Element element) {
+        felder[z][x] = element;
     }
 }
