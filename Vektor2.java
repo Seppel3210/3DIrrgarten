@@ -1,3 +1,5 @@
+import GLOOP.GLVektor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,11 +30,15 @@ public class Vektor2 {
     }
 
     public Vektor2 rotiereLinks() {
-        return new Vektor2(-z, x);
+        return new Vektor2(z, -x);
     }
 
     public Vektor2 rotiereRechts() {
-        return new Vektor2(z, -x);
+        return new Vektor2(-z, x);
+    }
+
+    public GLVektor zuGLVektor() {
+        return new GLVektor(x, 0, z);
     }
 
     public static List<Vektor2> alleRichtungen() {

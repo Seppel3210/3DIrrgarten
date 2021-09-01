@@ -1,37 +1,42 @@
-import GLOOP.GLObjekt;
-import GLOOP.GLWuerfel;
-import GLOOP.Sys;
+import GLOOP.GLTextur;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Irrgarten {
-    public static double KANTENLAENGE = 80;
-    private final GLObjekt[][] felder;
-    private Vektor2 letztesRechts = null;
+    public static double KANTENLAENGE = 30;
+    private final Element[][] felder;
+
+    GLTextur bodenTex;
 
     public Irrgarten(int tiefe, int breite) {
-        felder = new GLObjekt[tiefe][breite];
+        this(tiefe, breite, null, null);
+    }
+
+    public Irrgarten(int tiefe, int breite, GLTextur pBlockTex, GLTextur pBodenTex) {
+        felder = new Element[tiefe][breite];
+        bodenTex = pBodenTex;
         for (int z = 0; z < tiefe; z++) {
             for (int x = 0; x < breite; x++) {
                 double xOffset = breite * KANTENLAENGE / 2;
                 double zOffset = tiefe * KANTENLAENGE / 2;
-                felder[z][x] = new GLWuerfel(x * KANTENLAENGE - xOffset, KANTENLAENGE / 2, z * KANTENLAENGE - zOffset, KANTENLAENGE);
+                felder[z][x] = new Block(x * KANTENLAENGE - xOffset, KANTENLAENGE / 2, z * KANTENLAENGE - zOffset, KANTENLAENGE, pBlockTex);
             }
         }
         generieren(1, 1);
     }
 
-    private int breite() {
+    public int breite() {
         return felder[0].length;
     }
 
-    private int tiefe() {
+    public int tiefe() {
         return felder.length;
     }
 
     private void generieren(int x, int z) {
+        Vektor2 letztesRechts = null;
         entferne(new Vektor2(0, 1));
         ArrayDeque<VertagtePosition> positionQueue = new ArrayDeque<>();
         entferne(new Vektor2(x, z));
@@ -78,22 +83,29 @@ public class Irrgarten {
         return false;
     }
 
-    private boolean besetzt(Vektor2 position) {
-        return felder[position.z][position.x] != null;
+    public boolean besetzt(Vektor2 position) {
+        return !gibElement(position).gibBetretbar();
     }
 
-    private void entferne(Vektor2 position) {
+    public void entferne(Vektor2 position) {
         int x = position.x;
         int z = position.z;
         if (imFeld(position)) {
-            if (felder[z][x] != null) {
-                felder[z][x].loesche();
-                felder[z][x] = null;
+            if (felder[z][x] != null && felder[z][x] instanceof Block) {
+                if (bodenTex == null) {
+                    felder[z][x] = ((Block) felder[z][x]).ersetze();
+                } else {
+                    felder[z][x] = ((Block) felder[z][x]).ersetze(bodenTex);
+                }
             }
         }
     }
 
-    private boolean imFeld(Vektor2 position) {
+    public boolean imFeld(Vektor2 position) {
         return position.x >= 0 && position.x < breite() && position.z >= 0 && position.z < tiefe();
+    }
+
+    public Element gibElement(Vektor2 position) {
+        return felder[position.z][position.x];
     }
 }

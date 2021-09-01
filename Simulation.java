@@ -1,34 +1,44 @@
 import GLOOP.*;
 public class Simulation {
-    private GLKamera spieler;
     private GLTastatur tastatur;
     private GLHimmel himmel;
     private GLBoden boden;
     private GLLicht licht;
 
-    private Steuerung steuerung;
 
     private Irrgarten irrgarten;
+    private Spieler spieler;
 
 
     public Simulation() {
-        Sys.warte(1000);
         himmel = new GLHimmel("./Texturen/Skydome.jpg");
         boden = new GLBoden("./Texturen/Boden.jpg");
         tastatur = new GLTastatur();
         licht = new GLLicht();
 
-        steuerung = new Steuerung();
-
-        spieler = new GLEntwicklerkamera(800, 600);
-        spieler.setzePosition(0, 5000, 0);
-        spieler.setzeBlickpunkt(0, 0, -100);
-        irrgarten = new Irrgarten(100, 100);
+        irrgarten = new Irrgarten(50, 50);
+        spieler = new Spieler(irrgarten);
     }
 
     public void starteSimulation() {
         while (!tastatur.esc()) {
-            // [...]
+            if(tastatur.oben())
+            {
+                spieler.hinzurueck(true);
+            }
+            if(tastatur.unten())
+            {
+                spieler.hinzurueck(false);
+            }
+            if(tastatur.rechts())
+            {
+                spieler.linksrechts(true);
+            }
+            if(tastatur.links())
+            {
+                spieler.linksrechts(false);
+            }
+            spieler.animiere();
             Sys.warte();
         }
         Sys.beenden();
