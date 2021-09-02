@@ -9,14 +9,9 @@ public class Simulation {
 
     private Irrgarten irrgarten;
     private Spieler spieler;
-    //private GLKamera kamera;
     private Coin testcoin;
 
     public Simulation() {
-    /*kamera = new GLEntwicklerkamera();
-    kamera.setzePosition(0,5000,0);
-    kamera.setzeBlickpunkt(0,0,-100);
-    himmel = new GLHimmel("./Texturen/Skydome.jpg");*/
         tastatur = new GLTastatur();
         licht = new GLLicht();
         //steuerung = new Steuerung();
