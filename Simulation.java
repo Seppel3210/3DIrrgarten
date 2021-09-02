@@ -37,7 +37,10 @@ public class Simulation {
             }
             if (tastatur.istGedrueckt(' ')) {
                 spieler.toggleVogelperspektive();
-                Sys.warte(100);
+                Sys.warte(500);
+            }
+            if (tastatur.enter()) {
+                irrgarten.findShortestPath(spieler.getZ(), spieler.getX(), irrgarten.ende.z, irrgarten.ende.x);
             }
             spieler.animiere();
             irrgarten.animiereElemente();

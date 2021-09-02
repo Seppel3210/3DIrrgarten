@@ -17,6 +17,7 @@ public class Spieler extends AniElement {
     private AlteSpielerPosition altePos;
 
     public Spieler(Irrgarten pFeld) {
+        super(false, 0, 0, null);
         feld = pFeld;
         pos = new Vektor2(0, 1);
         kamera = new GLEntwicklerkamera();
@@ -116,5 +117,13 @@ public class Spieler extends AniElement {
             kamera.setzePosition(new GLVektor(0, 5000, 0));
             kamera.setzeBlickpunkt(blickrichtung.zuGLVektor().gibVielfaches(100));
         }
+    }
+
+    public int getX() {
+        return pos.x;
+    }
+
+    public int getZ() {
+        return pos.z;
     }
 }

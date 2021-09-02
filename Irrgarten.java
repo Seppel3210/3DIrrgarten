@@ -1,8 +1,7 @@
 import GLOOP.GLTextur;
+import GLOOP.Sys;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Irrgarten {
     public static double KANTENLAENGE = 50;
@@ -10,6 +9,7 @@ public class Irrgarten {
     private Element[][] sonderElemente;
     GLTextur bodenTex;
     private ScoreAnzeige score;
+    public Vektor2 ende;
 
     public Irrgarten(int tiefe, int breite) {
         this(tiefe, breite, null, null);
@@ -19,20 +19,25 @@ public class Irrgarten {
         felder = new Element[tiefe][breite];
         sonderElemente = new Element[breite][tiefe];
         bodenTex = pBodenTex;
+        double xOffset = breite * KANTENLAENGE / 2;
+        double zOffset = tiefe * KANTENLAENGE / 2;
         for (int z = 0; z < tiefe; z++) {
             for (int x = 0; x < breite; x++) {
-                double xOffset = breite * KANTENLAENGE / 2;
-                double zOffset = tiefe * KANTENLAENGE / 2;
-                felder[z][x] = new Block(x * KANTENLAENGE - xOffset, KANTENLAENGE / 2, z * KANTENLAENGE - zOffset, KANTENLAENGE, pBlockTex);
+                felder[z][x] = new Block(x * KANTENLAENGE - xOffset, KANTENLAENGE / 2, z * KANTENLAENGE - zOffset, KANTENLAENGE, pBlockTex, z, x, this);
             }
         }
-        generieren(1, 1);
+        ende = generieren(1, 1);
         elemente(50);
+        for (Element[] reihe : felder) {
+            for (Element feld : reihe) {
+                feld.sammleNachbarn();
+            }
+        }
     }
 
     public void coinPruef(Vektor2 pos) {
         //wenn an der Position eine Münze ist verschwindet sie 
-        if (sonderElemente[pos.x][pos.z] instanceof Coin) {
+        if (imFeld(pos) && sonderElemente[pos.x][pos.z] instanceof Coin) {
             ((Coin) sonderElemente[pos.x][pos.z]).einsammeln();
             sonderElemente[pos.x][pos.z] = null;
             if (score != null) {
@@ -72,13 +77,6 @@ public class Irrgarten {
                 setzeElement(x, z, ((Block) gibElement(x, z)).ersetzeAw());
             }
         }
-        for (i = 50; i > 0; i--) {
-            int x = (int) (Math.random() * (breite() - 2)) + 1;
-            int z = (int) (Math.random() * (tiefe() - 2)) + 1;
-            if (gibElement(x, z) instanceof Bodenplatte) {
-                sonderElemente[x][z] = new Coin((int) ((Bodenplatte) gibElement(x, z)).gibX(), (int) ((Bodenplatte) gibElement(x, z)).gibZ());
-            }
-        }
     }
 
     public int breite() {
@@ -89,7 +87,7 @@ public class Irrgarten {
         return felder.length;
     }
 
-    private void generieren(int x, int z) {
+    private Vektor2 generieren(int x, int z) {
         Vektor2 letztesRechts = null;
         entferne(new Vektor2(0, 1));
         ArrayDeque<VertagtePosition> positionQueue = new ArrayDeque<>();
@@ -125,6 +123,7 @@ public class Irrgarten {
             */
         }
         entferne(letztesRechts.summe(new Vektor2(1, 0)));
+        return letztesRechts.summe(new Vektor2(1, 0));
     }
 
     private boolean istSackgasse(Vektor2 position, Vektor2 richtung) {
@@ -157,7 +156,80 @@ public class Irrgarten {
             }
         }
     }
+    
+    public boolean findShortestPath(int sRow, int sCol, int eRow, int eCol) {
+        boolean[][] vScore = new boolean[felder[0].length][felder.length];
+        for(int i = 0; i < vScore[0].length; i++) {
+            for(int j = 0; j < vScore.length; j++) {
+                
+                vScore[i][j] = false;
+            }
+        }
+        felder[sRow][sCol].setzeDistanz(0);
+        
+        ArrayList<Element> arrayList = new ArrayList<>();
+        arrayList.add((Element)felder[sRow][sCol]);
+        HashMap<Element, Element> cameFrom = new HashMap<>();
 
+        while(!arrayList.isEmpty()) {
+            Collections.sort(arrayList);
+            Element current = arrayList.remove(0);
+            if(current.gibRow() == eRow && current.gibCol() == eCol) {
+                reconstructPath(cameFrom, felder[sRow][sCol], felder[eRow][eCol]);
+                return true;
+            }
+            vScore[current.gibRow()][current.gibCol()] = true;
+            for(Element nachbar: current.gibNachbarn()) {
+                if(!vScore[nachbar.gibRow()][nachbar.gibCol()]) {
+                    int NDScore = current.gibDistanz() + 1; 
+                    if(NDScore < nachbar.gibDistanz()) {
+                        nachbar.setzeDistanz(NDScore);
+                        arrayList.add(nachbar);
+                        cameFrom.put(nachbar, current);
+                    }
+                }
+            }
+        }
+        //reconstructPath(cameFrom, (Bodenplatte)felder[sRow][sCol], (Bodenplatte)felder[eRow][eCol]);
+        return false;
+    }
+    
+    public void sortArrayList(int[][] dScore, ArrayList<Bodenplatte> arrayList) {
+        for(int i = arrayList.size() - 1; i >= 1; i--) {
+            for(int j = 0; j < i; j++) {
+                int dScore1 = dScore[arrayList.get(j).gibRow()][arrayList.get(j).gibCol()];
+                int dScore2 = dScore[arrayList.get(j + 1).gibRow()][arrayList.get(j + 1).gibCol()];
+                if(dScore1 > dScore2) {
+                    Bodenplatte temp = arrayList.get(j);
+                    arrayList.set(j, arrayList.get(j + 1));
+                    arrayList.set(j + 1, temp);
+                }
+            }
+        }
+    }
+    
+    public ArrayList<Element> reconstructPath(HashMap<Element, Element> cameFrom, Element start, Element end) {
+        ArrayList<Element> arrayList = new ArrayList<>();
+        arrayList.add(end);
+        Element myStart = end;
+        while(!myStart.equals(start)) {
+            myStart = cameFrom.get(myStart);
+            arrayList.add(myStart);
+        }
+        
+        for(int i = 0; i < arrayList.size(); i++) {
+            if(arrayList.get(i) instanceof Bodenplatte)
+            {
+                ((Bodenplatte)arrayList.get(i)).gibPlatte().setzeSelbstleuchten(0, 0, 0.5);
+            }
+            else if(arrayList.get(i) instanceof AniWand)
+            {
+                ((AniWand)arrayList.get(i)).gibWuerfel().setzeFarbe(0, 0, 0.5);
+            }
+        }
+        return arrayList;
+    }
+    
     public boolean imFeld(Vektor2 position) {
         return position.x >= 0 && position.x < breite() && position.z >= 0 && position.z < tiefe();
     }
