@@ -1,7 +1,7 @@
-import GLOOP.GLEntwicklerkamera;
 import GLOOP.GLKamera;
 import GLOOP.GLLicht;
 import GLOOP.GLVektor;
+import GLOOP.Sys;
 
 public class Spieler extends AniElement {
     private GLKamera kamera;
@@ -23,6 +23,7 @@ public class Spieler extends AniElement {
         this.kamera = kamera;
         blickrichtung = Vektor2.OST;
         setzeKameraPosition();
+        licht = new GLLicht(kamera.gibPosition());
         altePos = new AlteSpielerPosition(kamera.gibPosition(), blickrichtung, pos);
         toggleVogelperspektive();
     }
@@ -105,7 +106,6 @@ public class Spieler extends AniElement {
         GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
         v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
         kamera.setzePosition(v);
-        licht = new GLLicht(v);
         v.addiere(blickrichtung.zuGLVektor());
         kamera.setzeBlickpunkt(v);
     }
@@ -113,11 +113,12 @@ public class Spieler extends AniElement {
     public void toggleVogelperspektive() {
         if (vogelperspektive) {
             vogelperspektive = false;
-            setzeKameraPosition();
+            GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
+            v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
+            kamerafahrt(v, v.gibSumme(blickrichtung.zuGLVektor()));
         } else {
             vogelperspektive = true;
-            kamera.setzePosition(new GLVektor(0, 2500, 0));
-            kamera.setzeBlickpunkt(blickrichtung.zuGLVektor().gibVielfaches(10));
+            kamerafahrt(new GLVektor(0, 2500, -200), new GLVektor(0, 0, 0));
         }
     }
 
@@ -127,5 +128,20 @@ public class Spieler extends AniElement {
 
     public int getZ() {
         return pos.z;
+    }
+
+    private void kamerafahrt(GLVektor neuePosition, GLVektor neuerBlickpunkt) {
+        GLVektor altePosition = kamera.gibPosition();
+
+        GLVektor positionRichtung = neuePosition.gibDifferenz(altePosition);
+        double skalar = 0.0;
+        kamera.setzeBlickpunkt(new GLVektor(0, 0, 0));
+        while (skalar < 1) {
+            skalar += 0.01;
+            kamera.setzePosition(altePosition.gibSumme(positionRichtung.gibVielfaches(skalar)));
+            //kamera.setzeBlickpunkt(altePosition.gibSumme(blickpunktRichtung.gibVielfaches(skalar)));
+            Sys.warte(10);
+        }
+        kamera.setzeBlickpunkt(neuerBlickpunkt);
     }
 }
