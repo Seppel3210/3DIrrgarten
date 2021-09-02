@@ -23,10 +23,10 @@ public class Spieler extends AniElement {
         v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
         kamera.setzePosition(v);
         licht = new GLLicht(v);
-        blickrichtung = Vektor2.SUED;
+        blickrichtung = Vektor2.WEST;
         v.addiere(blickrichtung.zuGLVektor());
         kamera.setzeBlickpunkt(v);
-        altePos = new AlteSpielerPosition(kamera.gibPosition(), kamera.gibBlickpunkt(), pos);
+        altePos = new AlteSpielerPosition(kamera.gibPosition(), blickrichtung, pos);
     }
 
     public void bewege(double pVorZurueck, double pLinksRechts) {
@@ -44,7 +44,7 @@ public class Spieler extends AniElement {
                 Vektor2 neuePos = pos.summe(blickrichtung);
                 if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
                     altePos.position = kamera.gibPosition();
-                    altePos.blickpunkt = kamera.gibBlickpunkt();
+                    altePos.blickrichtung = blickrichtung;
                     altePos.posImArray = pos;
                     pos = neuePos;
                     vor = (int) Irrgarten.KANTENLAENGE;
@@ -53,7 +53,7 @@ public class Spieler extends AniElement {
                 Vektor2 neuePos = pos.summe(blickrichtung.produkt(-1));
                 if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
                     altePos.position = kamera.gibPosition();
-                    altePos.blickpunkt = kamera.gibBlickpunkt();
+                    altePos.blickrichtung = blickrichtung;
                     altePos.posImArray = pos;
                     pos = neuePos;
                     vor = -(int) Irrgarten.KANTENLAENGE;
@@ -95,7 +95,8 @@ public class Spieler extends AniElement {
         } else if (!feld.imFeld(pos) || !feld.gibElement(pos).gibBetretbar()) {
             kamera.setzePosition(altePos.position);
             licht.setzePosition(altePos.position);
-            kamera.setzeBlickpunkt(altePos.blickpunkt);
+            kamera.setzeBlickpunkt(altePos.position.gibSumme(altePos.blickrichtung.zuGLVektor()));
+            blickrichtung = altePos.blickrichtung;
             pos = altePos.posImArray;
         }
     }

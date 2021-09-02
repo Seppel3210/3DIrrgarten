@@ -2,12 +2,12 @@ import GLOOP.GLVektor;
 
 public class AlteSpielerPosition {
     public GLVektor position;
-    public GLVektor blickpunkt;
+    public Vektor2 blickrichtung;
     public Vektor2 posImArray;
 
-    public AlteSpielerPosition(GLVektor pPosition, GLVektor pBlickpunkt, Vektor2 pPosImArray) {
+    public AlteSpielerPosition(GLVektor pPosition, Vektor2 pBlickrichtung, Vektor2 pPosImArray) {
         position = pPosition;
-        blickpunkt = pBlickpunkt;
+        blickrichtung = pBlickrichtung;
         posImArray = pPosImArray;
     }
 

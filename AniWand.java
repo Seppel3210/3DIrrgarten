@@ -37,9 +37,17 @@ public class AniWand extends AniElement {
         } else {
             if(counter > -2000) {
                 //wartezeit
+                if(!unten)
+                {
+                    betretbar = true;
+                }
                 counter--;
             } else {
                 counter = 500;
+                if(!unten)
+                {
+                    betretbar = false;
+                }
                 unten = !unten;
             }
         }   

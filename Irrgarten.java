@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Irrgarten {
     public static double KANTENLAENGE = 50;
-    private final Element[][] felder;
+    private Element[][] felder;
     private Element[][] sonderElemente;
     GLTextur bodenTex;
 
@@ -77,7 +77,7 @@ public class Irrgarten {
                 for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
                     // 0 => komplette Breitensuche
                     // 1 => komplette Tiefensuche
-                    if (Math.random() < 1.0) {
+                    if (Math.random() < 0.8) {
                         positionQueue.addFirst(new VertagtePosition(neuePosition, richtung));
                     } else {
                         positionQueue.addLast(new VertagtePosition(neuePosition, richtung));
