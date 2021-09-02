@@ -16,14 +16,15 @@ public class Spieler extends AniElement {
     private Vektor2 blickrichtung;
     private AlteSpielerPosition altePos;
 
-    public Spieler(Irrgarten pFeld) {
+    public Spieler(Irrgarten pFeld, GLKamera kamera) {
         super(false, 0, 0, null);
         feld = pFeld;
         pos = new Vektor2(0, 1);
-        kamera = new GLEntwicklerkamera();
+        this.kamera = kamera;
         blickrichtung = Vektor2.OST;
         setzeKameraPosition();
         altePos = new AlteSpielerPosition(kamera.gibPosition(), blickrichtung, pos);
+        toggleVogelperspektive();
     }
 
     public Vektor2 gibPosition() {
@@ -115,8 +116,8 @@ public class Spieler extends AniElement {
             setzeKameraPosition();
         } else {
             vogelperspektive = true;
-            kamera.setzePosition(new GLVektor(0, 5000, 0));
-            kamera.setzeBlickpunkt(blickrichtung.zuGLVektor().gibVielfaches(100));
+            kamera.setzePosition(new GLVektor(0, 2500, 0));
+            kamera.setzeBlickpunkt(blickrichtung.zuGLVektor().gibVielfaches(10));
         }
     }
 

@@ -49,14 +49,14 @@ public class ScoreAnzeige {
         num.setzeTextfarbe(0, 0, 0);
     }
 
-    public void AddCoin() {
+    public void addCoin() {
         if (coinCount < 999) {
             coinCount++;
         }
         AktualiCoinCount();
     }
 
-    public void SubCoin() {
+    public void subCoin() {
         if (coinCount > 0) {
             coinCount--;
         }

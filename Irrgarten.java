@@ -1,5 +1,6 @@
 import GLOOP.GLTafel;
 import GLOOP.GLTextur;
+import GLOOP.Sys;
 
 import java.util.*;
 
@@ -79,42 +80,31 @@ public class Irrgarten {
                 }
             }
         }
-        if(running)
-        {
-            if(counter == 1)
-            {
+        if (running) {
+            if (counter == 1) {
                 Element e = dijkstra.get(listPos);
                 listPos--;
-                if(e instanceof Bodenplatte)
-                {
-                    ((Bodenplatte)e).gibPlatte().setzeTextur(dijkstraTex);
+                if (e instanceof Bodenplatte) {
+                    ((Bodenplatte) e).gibPlatte().setzeTextur(dijkstraTex);
+                } else if (e instanceof AniWand) {
+                    ((AniWand) e).gibWuerfel().setzeTextur(dijkstraTex);
                 }
-                else if(e instanceof AniWand)
-                {
-                    ((AniWand)e).gibWuerfel().setzeTextur(dijkstraTex);
-                }
-                if(listPos == 0)
-                {
+                if (listPos == 0) {
                     running = false;
                 }
                 counter = 0;
-            }
-            else
-            {
+            } else {
                 counter++;
             }
         }
     }
-    
-    public void clearDijkstra()
-    {
-        for(Element e : dijkstra)
-        {
-            if(e instanceof Bodenplatte ) {
-                ((Bodenplatte)e).gibPlatte().setzeTextur(bodenTex);
-            }
-            else if(e instanceof AniWand ) {
-                ((AniWand)e).gibWuerfel().setzeTextur("Texturen/Rotleder.jpg");
+
+    public void clearDijkstra() {
+        for (Element e : dijkstra) {
+            if (e instanceof Bodenplatte) {
+                ((Bodenplatte) e).gibPlatte().setzeTextur(bodenTex);
+            } else if (e instanceof AniWand) {
+                ((AniWand) e).gibWuerfel().setzeTextur("Texturen/Rotleder.jpg");
             }
         }
     }
@@ -168,7 +158,7 @@ public class Irrgarten {
                 if (neuePosition.x == breite() - 2) {
                     letztesRechts = neuePosition;
                 }
-                //Sys.warte(40);
+                Sys.warte(10);
                 for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
                     // 0 => komplette Breitensuche
                     // 1 => komplette Tiefensuche
@@ -228,36 +218,36 @@ public class Irrgarten {
             }
         }
     }
-    
+
     public boolean findShortestPath(int sRow, int sCol, int eRow, int eCol) {
         boolean[][] vScore = new boolean[felder[0].length][felder.length];
-        for(int i = 0; i < vScore[0].length; i++) {
-            for(int j = 0; j < vScore.length; j++) {
-                
+        for (int i = 0; i < vScore[0].length; i++) {
+            for (int j = 0; j < vScore.length; j++) {
+
                 vScore[i][j] = false;
             }
         }
         felder[sRow][sCol].setzeDistanz(0);
-        
+
         ArrayList<Element> arrayList = new ArrayList<>();
-        arrayList.add((Element)felder[sRow][sCol]);
+        arrayList.add((Element) felder[sRow][sCol]);
         HashMap<Element, Element> cameFrom = new HashMap<>();
 
-        while(!arrayList.isEmpty()) {
+        while (!arrayList.isEmpty()) {
             Collections.sort(arrayList);
             Element current = arrayList.remove(0);
-            if(current.gibRow() == eRow && current.gibCol() == eCol) {
+            if (current.gibRow() == eRow && current.gibCol() == eCol) {
                 ArrayList<Element> myArrayList = reconstructPath(cameFrom, felder[sRow][sCol], felder[eRow][eCol]);
                 dijkstra = myArrayList;
                 running = true;
-                listPos = dijkstra.size()-1;
+                listPos = dijkstra.size() - 1;
                 return true;
             }
             vScore[current.gibRow()][current.gibCol()] = true;
-            for(Element nachbar: current.gibNachbarn()) {
-                if(!vScore[nachbar.gibRow()][nachbar.gibCol()]) {
-                    int NDScore = current.gibDistanz() + 1; 
-                    if(NDScore < nachbar.gibDistanz()) {
+            for (Element nachbar : current.gibNachbarn()) {
+                if (!vScore[nachbar.gibRow()][nachbar.gibCol()]) {
+                    int NDScore = current.gibDistanz() + 1;
+                    if (NDScore < nachbar.gibDistanz()) {
                         nachbar.setzeDistanz(NDScore);
                         arrayList.add(nachbar);
                         cameFrom.put(nachbar, current);
@@ -268,18 +258,18 @@ public class Irrgarten {
         //reconstructPath(cameFrom, (Bodenplatte)felder[sRow][sCol], (Bodenplatte)felder[eRow][eCol]);
         return false;
     }
-    
+
     public ArrayList<Element> reconstructPath(HashMap<Element, Element> cameFrom, Element start, Element end) {
         ArrayList<Element> arrayList = new ArrayList<>();
         arrayList.add(end);
         Element myStart = end;
-        while(!myStart.equals(start)) {
+        while (!myStart.equals(start)) {
             myStart = cameFrom.get(myStart);
             arrayList.add(myStart);
         }
         return arrayList;
     }
-    
+
     public boolean imFeld(Vektor2 position) {
         return position.x >= 0 && position.x < breite() && position.z >= 0 && position.z < tiefe();
     }

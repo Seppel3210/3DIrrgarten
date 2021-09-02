@@ -14,8 +14,11 @@ public class Simulation {
         tastatur = new GLTastatur();
         //steuerung = new Steuerung();
 
+        GLKamera kamera = new GLKamera();
+        kamera.setzePosition(0, 2500, 0);
+        kamera.setzeBlickpunkt(0, 0, -10);
         irrgarten = new Irrgarten(50, 50, new GLTextur("./Texturen/Ziegel.jpg"), new GLTextur("./Texturen/Bodenplatte3.png"));
-        spieler = new Spieler(irrgarten);
+        spieler = new Spieler(irrgarten, kamera);
         score = new ScoreAnzeige(spieler.gibKamera());
         irrgarten.setzeScoreAnzeige(score);
     }
