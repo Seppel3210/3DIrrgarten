@@ -91,7 +91,7 @@ public class Spieler extends AniElement {
         } else if (rechts < 0) {
             kamera.rotiere(drehGeschwindigkeit, new GLVektor(0, 1, 0), kamera.gibPosition());
             rechts += drehGeschwindigkeit;
-        } else if (!feld.imFeld(pos) || !feld.gibElement(pos).gibBetretbar()) {
+        } else if (feld.imFeld(pos) && !feld.gibElement(pos).gibBetretbar()) {
             kamera.setzePosition(altePos.position);
             licht.setzePosition(altePos.position);
             kamera.setzeBlickpunkt(altePos.position.gibSumme(altePos.blickrichtung.zuGLVektor()));
