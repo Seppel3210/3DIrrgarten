@@ -81,20 +81,22 @@ public class Spieler extends AniElement {
 
     @Override
     public void animiere() {
+        int geschwindigkeit = 5;
+        int drehGeschwindigkeit = 5;
         if (vor > 0) {
-            kamera.verschiebe(blickrichtung.zuGLVektor());
-            licht.verschiebe(blickrichtung.zuGLVektor());
-            vor--;
+            kamera.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));
+            licht.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));
+            vor -= geschwindigkeit;
         } else if (vor < 0) {
-            kamera.verschiebe(blickrichtung.produkt(-1).zuGLVektor());
-            licht.verschiebe(blickrichtung.produkt(-1).zuGLVektor());
-            vor++;
+            kamera.verschiebe(blickrichtung.produkt(-1).zuGLVektor().gibVielfaches(geschwindigkeit));
+            licht.verschiebe(blickrichtung.produkt(-1).zuGLVektor().gibVielfaches(geschwindigkeit));
+            vor += geschwindigkeit;
         } else if (rechts > 0) {
-            kamera.rotiere(-1, new GLVektor(0, 1, 0), kamera.gibPosition());
-            rechts--;
+            kamera.rotiere(-drehGeschwindigkeit, new GLVektor(0, 1, 0), kamera.gibPosition());
+            rechts -= drehGeschwindigkeit;
         } else if (rechts < 0) {
-            kamera.rotiere(1, new GLVektor(0, 1, 0), kamera.gibPosition());
-            rechts++;
+            kamera.rotiere(drehGeschwindigkeit, new GLVektor(0, 1, 0), kamera.gibPosition());
+            rechts += drehGeschwindigkeit;
         }
     }
 }
