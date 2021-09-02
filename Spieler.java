@@ -29,7 +29,7 @@ public class Spieler extends AniElement {
         }*/
         pos = new Vektor2(1, 1);
         kamera = new GLSchwenkkamera();
-        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
+        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition().gibSumme(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
         kamera.setzePosition(v);
         licht = new GLLicht(v);
         blickrichtung = Vektor2.SUED;
@@ -51,14 +51,14 @@ public class Spieler extends AniElement {
             if (richtung) {
 
                 Vektor2 neuePos = pos.summe(blickrichtung);
-                if (feld.gibElement(neuePos).gibBetretbar()) {
+                if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
                     pos = neuePos;
                     vor = (int) Irrgarten.KANTENLAENGE;
                 }
                 System.out.println(pos.x + " " + pos.z);
             } else {
                 Vektor2 neuePos = pos.summe(blickrichtung.produkt(-1));
-                if (feld.gibElement(neuePos).gibBetretbar()) {
+                if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
                     pos = neuePos;
                     vor = -(int) Irrgarten.KANTENLAENGE;
                 }
@@ -81,8 +81,8 @@ public class Spieler extends AniElement {
 
     @Override
     public void animiere() {
-        int geschwindigkeit = 5;
-        int drehGeschwindigkeit = 5;
+        int geschwindigkeit = 2;
+        int drehGeschwindigkeit = 1;
         if (vor > 0) {
             kamera.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));
             licht.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));

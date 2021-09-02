@@ -119,7 +119,7 @@ public class Irrgarten {
         }
     }
 
-    private boolean imFeld(Vektor2 position) {
+    public boolean imFeld(Vektor2 position) {
         return position.x >= 0 && position.x < breite() && position.z >= 0 && position.z < tiefe();
     }
 
