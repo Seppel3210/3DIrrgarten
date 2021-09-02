@@ -1,7 +1,6 @@
-import GLOOP.Sys;
 import net.java.games.input.*;
-
-import java.text.DecimalFormat;
+import java.text.*;
+import GLOOP.*;
 
 public class Steuerung {
   Controller[] geraet;

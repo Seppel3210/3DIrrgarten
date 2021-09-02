@@ -84,6 +84,13 @@ public class Irrgarten {
                     }
                 }
             }
+            /*
+            if (Math.random() < 0.1) {
+                List<VertagtePosition> zufallsListe = new ArrayList<>(positionQueue);
+                Collections.shuffle(zufallsListe);
+                positionQueue = new ArrayDeque<>(zufallsListe);
+            }
+            */
         }
         entferne(letztesRechts.summe(new Vektor2(1, 0)));
     }

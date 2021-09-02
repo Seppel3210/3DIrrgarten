@@ -1,6 +1,6 @@
+import GLOOP.GLEntwicklerkamera;
 import GLOOP.GLKamera;
 import GLOOP.GLLicht;
-import GLOOP.GLSchwenkkamera;
 import GLOOP.GLVektor;
 
 public class Spieler extends AniElement {
@@ -13,29 +13,20 @@ public class Spieler extends AniElement {
     private int rechts;
     private Vektor2 pos;
     private Vektor2 blickrichtung;
+    private AlteSpielerPosition altePos;
 
     public Spieler(Irrgarten pFeld) {
         feld = pFeld;
-        pos = new Vektor2(0, 0);
-        /*for (int x = feld.breite() / 2; x < feld.breite(); x++) {
-            for (int z = feld.tiefe() / 2; z < feld.tiefe(); z++) {
-                Vektor2 neuePos = new Vektor2(x, z);
-                if (feld.gibElement(neuePos).gibBetretbar()) {
-                    pos = neuePos;
-
-                    break;
-                }
-            }
-        }*/
-        pos = new Vektor2(1, 1);
-        kamera = new GLSchwenkkamera();
-        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition().gibSumme(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
+        pos = new Vektor2(0, 1);
+        kamera = new GLEntwicklerkamera();
+        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
+        v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
         kamera.setzePosition(v);
         licht = new GLLicht(v);
         blickrichtung = Vektor2.SUED;
         v.addiere(blickrichtung.zuGLVektor());
         kamera.setzeBlickpunkt(v);
-        System.out.println(pos.x + " " + pos.z);
+        altePos = new AlteSpielerPosition(kamera.gibPosition(), kamera.gibBlickpunkt(), pos);
     }
 
     public void bewege(double pVorZurueck, double pLinksRechts) {
@@ -52,17 +43,21 @@ public class Spieler extends AniElement {
 
                 Vektor2 neuePos = pos.summe(blickrichtung);
                 if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
+                    altePos.position = kamera.gibPosition();
+                    altePos.blickpunkt = kamera.gibBlickpunkt();
+                    altePos.posImArray = pos;
                     pos = neuePos;
                     vor = (int) Irrgarten.KANTENLAENGE;
                 }
-                System.out.println(pos.x + " " + pos.z);
             } else {
                 Vektor2 neuePos = pos.summe(blickrichtung.produkt(-1));
                 if (!feld.imFeld(neuePos) || feld.gibElement(neuePos).gibBetretbar()) {
+                    altePos.position = kamera.gibPosition();
+                    altePos.blickpunkt = kamera.gibBlickpunkt();
+                    altePos.posImArray = pos;
                     pos = neuePos;
                     vor = -(int) Irrgarten.KANTENLAENGE;
                 }
-                System.out.println(pos.x + " " + pos.z);
             }
         }
     }
@@ -82,7 +77,7 @@ public class Spieler extends AniElement {
     @Override
     public void animiere() {
         int geschwindigkeit = 2;
-        int drehGeschwindigkeit = 1;
+        int drehGeschwindigkeit = 2;
         if (vor > 0) {
             kamera.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));
             licht.verschiebe(blickrichtung.zuGLVektor().gibVielfaches(geschwindigkeit));
@@ -97,6 +92,11 @@ public class Spieler extends AniElement {
         } else if (rechts < 0) {
             kamera.rotiere(drehGeschwindigkeit, new GLVektor(0, 1, 0), kamera.gibPosition());
             rechts += drehGeschwindigkeit;
+        } else if (!feld.imFeld(pos) || !feld.gibElement(pos).gibBetretbar()) {
+            kamera.setzePosition(altePos.position);
+            licht.setzePosition(altePos.position);
+            kamera.setzeBlickpunkt(altePos.blickpunkt);
+            pos = altePos.posImArray;
         }
     }
 }

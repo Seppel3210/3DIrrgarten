@@ -1,3 +1,4 @@
+import GLOOP.*;
 public class Element
 {
     protected boolean betretbar;
@@ -5,4 +6,6 @@ public class Element
     public boolean gibBetretbar(){
         return betretbar;
     }
+    
+    
 }

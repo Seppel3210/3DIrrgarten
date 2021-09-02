@@ -1,41 +1,44 @@
 import GLOOP.*;
+
 public class Simulation {
     private GLTastatur tastatur;
     private GLHimmel himmel;
-    private GLBoden boden;
     private GLLicht licht;
 
+    //private Steuerung steuerung;
 
     private Irrgarten irrgarten;
     private Spieler spieler;
-
+    //private GLKamera kamera;
+    private Coin testcoin;
 
     public Simulation() {
-        himmel = new GLHimmel("./Texturen/Skydome.jpg");
-        boden = new GLBoden("./Texturen/Boden.jpg");
+    /*kamera = new GLEntwicklerkamera();
+    kamera.setzePosition(0,5000,0);
+    kamera.setzeBlickpunkt(0,0,-100);
+    himmel = new GLHimmel("./Texturen/Skydome.jpg");*/
         tastatur = new GLTastatur();
         licht = new GLLicht();
+        //steuerung = new Steuerung();
 
-        irrgarten = new Irrgarten(50, 50);
+        irrgarten = new Irrgarten(50, 50, new GLTextur("./Texturen/Ziegel.jpg"), new GLTextur("./Texturen/Rotmarmor.jpg"));
         spieler = new Spieler(irrgarten);
+        testcoin = new Coin(2000, 2000);
     }
 
     public void starteSimulation() {
         while (!tastatur.esc()) {
-            if(tastatur.oben())
-            {
+
+            if (tastatur.oben()) {
                 spieler.hinzurueck(true);
             }
-            if(tastatur.unten())
-            {
+            if (tastatur.unten()) {
                 spieler.hinzurueck(false);
             }
-            if(tastatur.rechts())
-            {
+            if (tastatur.rechts()) {
                 spieler.linksrechts(true);
             }
-            if(tastatur.links())
-            {
+            if (tastatur.links()) {
                 spieler.linksrechts(false);
             }
             spieler.animiere();
