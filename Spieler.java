@@ -11,6 +11,7 @@ public class Spieler extends AniElement {
 
     private int vor;
     private int rechts;
+    private boolean vogelperspektive = false;
     private Vektor2 pos;
     private Vektor2 blickrichtung;
     private AlteSpielerPosition altePos;
@@ -19,13 +20,8 @@ public class Spieler extends AniElement {
         feld = pFeld;
         pos = new Vektor2(0, 1);
         kamera = new GLEntwicklerkamera();
-        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
-        v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
-        kamera.setzePosition(v);
-        licht = new GLLicht(v);
         blickrichtung = Vektor2.OST;
-        v.addiere(blickrichtung.zuGLVektor());
-        kamera.setzeBlickpunkt(v);
+        setzeKameraPosition();
         altePos = new AlteSpielerPosition(kamera.gibPosition(), blickrichtung, pos);
     }
 
@@ -99,6 +95,26 @@ public class Spieler extends AniElement {
             kamera.setzeBlickpunkt(altePos.position.gibSumme(altePos.blickrichtung.zuGLVektor()));
             blickrichtung = altePos.blickrichtung;
             pos = altePos.posImArray;
+        }
+    }
+
+    private void setzeKameraPosition() {
+        GLVektor v = ((Bodenplatte) feld.gibElement(pos)).gibPosition();
+        v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
+        kamera.setzePosition(v);
+        licht = new GLLicht(v);
+        v.addiere(blickrichtung.zuGLVektor());
+        kamera.setzeBlickpunkt(v);
+    }
+
+    public void toggleVogelperspektive() {
+        if (vogelperspektive) {
+            vogelperspektive = false;
+            setzeKameraPosition();
+        } else {
+            vogelperspektive = true;
+            kamera.setzePosition(new GLVektor(0, 5000, 0));
+            kamera.setzeBlickpunkt(blickrichtung.zuGLVektor().gibVielfaches(100));
         }
     }
 }

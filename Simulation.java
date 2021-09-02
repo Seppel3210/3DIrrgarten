@@ -35,6 +35,10 @@ public class Simulation {
             if (tastatur.links()) {
                 spieler.linksrechts(false);
             }
+            if (tastatur.istGedrueckt(' ')) {
+                spieler.toggleVogelperspektive();
+                Sys.warte(100);
+            }
             spieler.animiere();
             irrgarten.animiereElemente();
             Sys.warte();
