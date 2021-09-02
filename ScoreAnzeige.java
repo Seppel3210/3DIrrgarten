@@ -8,6 +8,7 @@ public class ScoreAnzeige {
 
     GLTafel picCoin;
     GLTafel anzeige;
+    GLTafel num;
 
     public ScoreAnzeige(GLKamera pKamera) {
         GLVektor normalKPos = pKamera.gibPosition();
@@ -20,6 +21,7 @@ public class ScoreAnzeige {
 
         Tafel1Erstellen();
         Tafel2Erstellen();
+        Tafel3Erstellen();
 
         pKamera.setzePosition(normalKPos);
         pKamera.setzeBlickpunkt(normalKBli);
@@ -28,27 +30,33 @@ public class ScoreAnzeige {
     }
 
     private void Tafel1Erstellen() {
-        picCoin = new GLTafel(-177, 131.5, -1, 12, 13, "Coin2.png");
+        anzeige = new GLTafel(-16.45, 35.7, -180, 3.3, 1.5, "Knopf.png");
+        anzeige.setzeAutodrehung(true);
+        anzeige.setzeKamerafixierung(true);
+    }
+
+    private void Tafel2Erstellen() {
+        picCoin = new GLTafel(-16.9, 35.175, -181, 1.5, 1.5, "Coin2.png");
         picCoin.setzeAutodrehung(true);
         picCoin.setzeKamerafixierung(true);
     }
 
-    private void Tafel2Erstellen() {
-        anzeige = new GLTafel(-164, 132, 0, 12, 13, "Knopf.png");
-        anzeige.setzeAutodrehung(true);
-        anzeige.setzeKamerafixierung(true);
-        anzeige.setzeText(score, 10);
-        anzeige.setzeTextfarbe(0, 0, 0);
+    private void Tafel3Erstellen() {
+        num = new GLTafel(-15.2, 35, -181, 1, 1, "leer.png");
+        num.setzeAutodrehung(true);
+        num.setzeKamerafixierung(true);
+        num.setzeText("000", 1);
+        num.setzeTextfarbe(0, 0, 0);
     }
 
-    public void addCoin() {
+    public void AddCoin() {
         if (coinCount < 999) {
             coinCount++;
         }
         AktualiCoinCount();
     }
 
-    public void subCoin() {
+    public void SubCoin() {
         if (coinCount > 0) {
             coinCount--;
         }
@@ -63,6 +71,6 @@ public class ScoreAnzeige {
         } else {
             score = "" + coinCount;
         }
-        anzeige.setzeText(score, 10);
+        num.setzeText(score, 1);
     }
 }

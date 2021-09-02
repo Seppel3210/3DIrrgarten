@@ -42,6 +42,10 @@ public class Simulation {
             if (tastatur.enter()) {
                 irrgarten.findShortestPath(spieler.getZ(), spieler.getX(), irrgarten.ende.z, irrgarten.ende.x);
             }
+            if(tastatur.istGedrueckt('c'))
+            {
+                irrgarten.clearDijkstra();
+            }
             spieler.animiere();
             irrgarten.animiereElemente();
             Sys.warte();

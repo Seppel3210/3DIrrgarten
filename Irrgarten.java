@@ -10,9 +10,13 @@ public class Irrgarten {
     private GLTextur blockTex;
     private GLTextur bodenTex;
     private GLTextur coinTex;
+    private GLTextur dijkstraTex;
     private ScoreAnzeige score;
     public Vektor2 ende;
-
+    private ArrayList<Element> dijkstra;
+    private int counter = 0;
+    private int listPos;
+    private boolean running;
     private GLTafel startschild;
     private GLTafel endschild;
 
@@ -25,6 +29,7 @@ public class Irrgarten {
         sonderElemente = new Element[breite][tiefe];
         bodenTex = pBodenTex;
         blockTex = pBlockTex;
+        dijkstraTex = new GLTextur("Texturen/Marmor.jpg");
         coinTex = new GLTextur("./Texturen/Gold.jpg");
         double xOffset = breite * KANTENLAENGE / 2;
         double zOffset = tiefe * KANTENLAENGE / 2;
@@ -72,6 +77,44 @@ public class Irrgarten {
                 if (sonderElemente[x][z] instanceof AniElement) {
                     ((AniElement) sonderElemente[x][z]).animiere();
                 }
+            }
+        }
+        if(running)
+        {
+            if(counter == 1)
+            {
+                Element e = dijkstra.get(listPos);
+                listPos--;
+                if(e instanceof Bodenplatte)
+                {
+                    ((Bodenplatte)e).gibPlatte().setzeTextur(dijkstraTex);
+                }
+                else if(e instanceof AniWand)
+                {
+                    ((AniWand)e).gibWuerfel().setzeTextur(dijkstraTex);
+                }
+                if(listPos == 0)
+                {
+                    running = false;
+                }
+                counter = 0;
+            }
+            else
+            {
+                counter++;
+            }
+        }
+    }
+    
+    public void clearDijkstra()
+    {
+        for(Element e : dijkstra)
+        {
+            if(e instanceof Bodenplatte ) {
+                ((Bodenplatte)e).gibPlatte().setzeTextur(bodenTex);
+            }
+            else if(e instanceof AniWand ) {
+                ((AniWand)e).gibWuerfel().setzeTextur("Texturen/Rotleder.jpg");
             }
         }
     }
@@ -151,7 +194,7 @@ public class Irrgarten {
         endschild = new GLTafel(((Bodenplatte) gibElement(ausgang)).gibX() + 25, 0, ((Bodenplatte) gibElement(ausgang)).gibZ(), 50, 50, blockTex);
         endschild.setzeText("Ziel", 17);
         endschild.setzeTextfarbe(0, 1, 0);
-        endschild.drehe(0, 270, 0, startschild.gibPosition());
+        endschild.drehe(0, 270, 0, endschild.gibPosition());
         return ausgang;
     }
 
@@ -204,7 +247,10 @@ public class Irrgarten {
             Collections.sort(arrayList);
             Element current = arrayList.remove(0);
             if(current.gibRow() == eRow && current.gibCol() == eCol) {
-                reconstructPath(cameFrom, felder[sRow][sCol], felder[eRow][eCol]);
+                ArrayList<Element> myArrayList = reconstructPath(cameFrom, felder[sRow][sCol], felder[eRow][eCol]);
+                dijkstra = myArrayList;
+                running = true;
+                listPos = dijkstra.size()-1;
                 return true;
             }
             vScore[current.gibRow()][current.gibCol()] = true;
@@ -223,20 +269,6 @@ public class Irrgarten {
         return false;
     }
     
-    public void sortArrayList(int[][] dScore, ArrayList<Bodenplatte> arrayList) {
-        for(int i = arrayList.size() - 1; i >= 1; i--) {
-            for(int j = 0; j < i; j++) {
-                int dScore1 = dScore[arrayList.get(j).gibRow()][arrayList.get(j).gibCol()];
-                int dScore2 = dScore[arrayList.get(j + 1).gibRow()][arrayList.get(j + 1).gibCol()];
-                if(dScore1 > dScore2) {
-                    Bodenplatte temp = arrayList.get(j);
-                    arrayList.set(j, arrayList.get(j + 1));
-                    arrayList.set(j + 1, temp);
-                }
-            }
-        }
-    }
-    
     public ArrayList<Element> reconstructPath(HashMap<Element, Element> cameFrom, Element start, Element end) {
         ArrayList<Element> arrayList = new ArrayList<>();
         arrayList.add(end);
@@ -244,17 +276,6 @@ public class Irrgarten {
         while(!myStart.equals(start)) {
             myStart = cameFrom.get(myStart);
             arrayList.add(myStart);
-        }
-        
-        for(int i = 0; i < arrayList.size(); i++) {
-            if(arrayList.get(i) instanceof Bodenplatte)
-            {
-                ((Bodenplatte)arrayList.get(i)).gibPlatte().setzeSelbstleuchten(0, 0, 0.5);
-            }
-            else if(arrayList.get(i) instanceof AniWand)
-            {
-                ((AniWand)arrayList.get(i)).gibWuerfel().setzeFarbe(0, 0, 0.5);
-            }
         }
         return arrayList;
     }
