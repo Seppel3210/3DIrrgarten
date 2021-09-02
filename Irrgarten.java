@@ -1,5 +1,4 @@
 import GLOOP.GLTextur;
-import GLOOP.Sys;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ public class Irrgarten {
     private Element[][] felder;
     private Element[][] sonderElemente;
     GLTextur bodenTex;
+    private ScoreAnzeige score;
 
     public Irrgarten(int tiefe, int breite) {
         this(tiefe, breite, null, null);
@@ -17,6 +17,7 @@ public class Irrgarten {
 
     public Irrgarten(int tiefe, int breite, GLTextur pBlockTex, GLTextur pBodenTex) {
         felder = new Element[tiefe][breite];
+        sonderElemente = new Element[breite][tiefe];
         bodenTex = pBodenTex;
         for (int z = 0; z < tiefe; z++) {
             for (int x = 0; x < breite; x++) {
@@ -29,7 +30,23 @@ public class Irrgarten {
         elemente(50);
     }
 
+    public void coinPruef(Vektor2 pos) {
+        //wenn an der Position eine Münze ist verschwindet sie 
+        if (sonderElemente[pos.x][pos.z] instanceof Coin) {
+            ((Coin) sonderElemente[pos.x][pos.z]).einsammeln();
+            sonderElemente[pos.x][pos.z] = null;
+            if (score != null) {
+                score.addCoin();
+            }
+        }
+    }
+
+    public void setzeScoreAnzeige(ScoreAnzeige pScore) {
+        score = pScore;
+    }
+
     public void animiereElemente() {
+        //AniElemente im Felder Array
         for (int z = 0; z < tiefe(); z++) {
             for (int x = 0; x < breite(); x++) {
                 if (gibElement(x, z) instanceof AniElement) {
@@ -37,14 +54,29 @@ public class Irrgarten {
                 }
             }
         }
+        //AniElemente im SonderElemente Array
+        for (int z = 0; z < tiefe(); z++) {
+            for (int x = 0; x < breite(); x++) {
+                if (sonderElemente[x][z] instanceof AniElement) {
+                    ((AniElement) sonderElemente[x][z]).animiere();
+                }
+            }
+        }
     }
 
     public void elemente(int i) {
         for (; i > 0; i--) {
-            int x = (int) (Math.random() * breite() - 2) + 1;
-            int z = (int) (Math.random() * tiefe() - 2) + 1;
+            int x = (int) (Math.random() * (breite() - 2)) + 1;
+            int z = (int) (Math.random() * (tiefe() - 2)) + 1;
             if (gibElement(x, z) instanceof Block) {
                 setzeElement(x, z, ((Block) gibElement(x, z)).ersetzeAw());
+            }
+        }
+        for (i = 50; i > 0; i--) {
+            int x = (int) (Math.random() * (breite() - 2)) + 1;
+            int z = (int) (Math.random() * (tiefe() - 2)) + 1;
+            if (gibElement(x, z) instanceof Bodenplatte) {
+                sonderElemente[x][z] = new Coin((int) ((Bodenplatte) gibElement(x, z)).gibX(), (int) ((Bodenplatte) gibElement(x, z)).gibZ());
             }
         }
     }

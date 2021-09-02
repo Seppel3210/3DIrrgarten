@@ -30,13 +30,13 @@ public class Block extends Element {
     }
 
     public Bodenplatte ersetzeBp(GLTextur pTex) {
-        Bodenplatte bp = new Bodenplatte(wuerfel.gibX(), 0, wuerfel.gibZ(), 100, pTex);
+        Bodenplatte bp = new Bodenplatte(wuerfel.gibX(), 0, wuerfel.gibZ(), Irrgarten.KANTENLAENGE, pTex);
         wuerfel.loesche();
         return bp;
     }
 
     public Bodenplatte ersetzeBp() {
-        Bodenplatte bp = new Bodenplatte(wuerfel.gibX(), 0, wuerfel.gibZ(), 100);
+        Bodenplatte bp = new Bodenplatte(wuerfel.gibX(), 0, wuerfel.gibZ(), Irrgarten.KANTENLAENGE);
         wuerfel.loesche();
         return bp;
     }

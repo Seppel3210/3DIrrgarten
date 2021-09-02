@@ -4,7 +4,7 @@ public class AniWand extends AniElement {
 
     private GLWuerfel aniWand;
     private boolean betretbar = false;
-    private int counter = 500;
+    private int counter = 490;
     private boolean unten;
 
     private GLTextur tex;
@@ -43,7 +43,7 @@ public class AniWand extends AniElement {
                 }
                 counter--;
             } else {
-                counter = 500;
+                counter = 490;
                 if(!unten)
                 {
                     betretbar = false;

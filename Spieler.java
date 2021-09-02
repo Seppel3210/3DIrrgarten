@@ -23,18 +23,18 @@ public class Spieler extends AniElement {
         v.addiere(new GLVektor(0, Irrgarten.KANTENLAENGE / 2, 0));
         kamera.setzePosition(v);
         licht = new GLLicht(v);
-        blickrichtung = Vektor2.WEST;
+        blickrichtung = Vektor2.OST;
         v.addiere(blickrichtung.zuGLVektor());
         kamera.setzeBlickpunkt(v);
         altePos = new AlteSpielerPosition(kamera.gibPosition(), blickrichtung, pos);
     }
 
-    public void bewege(double pVorZurueck, double pLinksRechts) {
-
+    public Vektor2 gibPosition() {
+        return pos;
     }
 
-    public void schwenke(double pLinksRechts, double pHochRunter) {
-
+    public GLKamera gibKamera() {
+        return kamera;
     }
 
     public void hinzurueck(boolean richtung) {
@@ -48,6 +48,7 @@ public class Spieler extends AniElement {
                     altePos.posImArray = pos;
                     pos = neuePos;
                     vor = (int) Irrgarten.KANTENLAENGE;
+                    feld.coinPruef(pos);
                 }
             } else {
                 Vektor2 neuePos = pos.summe(blickrichtung.produkt(-1));

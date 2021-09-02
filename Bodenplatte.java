@@ -32,4 +32,11 @@ public class Bodenplatte extends Element {
     public GLVektor gibPosition() {
         return platte.gibPosition();
     }
+    
+    public double gibX(){
+        return platte.gibX();
+    }
+    public double gibZ(){
+        return platte.gibZ();
+    }
 }

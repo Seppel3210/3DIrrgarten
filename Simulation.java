@@ -3,22 +3,21 @@ import GLOOP.*;
 public class Simulation {
     private GLTastatur tastatur;
     private GLHimmel himmel;
-    private GLLicht licht;
 
     //private Steuerung steuerung;
 
     private Irrgarten irrgarten;
     private Spieler spieler;
-    private Coin testcoin;
+    private ScoreAnzeige score;
 
     public Simulation() {
         tastatur = new GLTastatur();
-        licht = new GLLicht();
         //steuerung = new Steuerung();
 
         irrgarten = new Irrgarten(50, 50, new GLTextur("./Texturen/Ziegel.jpg"), new GLTextur("./Texturen/Rotmarmor.jpg"));
         spieler = new Spieler(irrgarten);
-        testcoin = new Coin(2000, 2000);
+        score = new ScoreAnzeige(spieler.gibKamera());
+        irrgarten.setzeScoreAnzeige(score);
     }
 
     public void starteSimulation() {
