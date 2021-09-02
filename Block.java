@@ -3,7 +3,6 @@ import GLOOP.GLVektor;
 import GLOOP.GLWuerfel;
 
 public class Block extends Element {
-
     private GLWuerfel wuerfel;
 
     public Block(double pX, double pY, double pZ, double seite, int row, int col, Irrgarten garten) {

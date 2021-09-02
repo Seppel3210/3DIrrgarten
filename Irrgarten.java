@@ -1,5 +1,5 @@
+import GLOOP.GLTafel;
 import GLOOP.GLTextur;
-import GLOOP.Sys;
 
 import java.util.*;
 
@@ -7,9 +7,14 @@ public class Irrgarten {
     public static double KANTENLAENGE = 50;
     private Element[][] felder;
     private Element[][] sonderElemente;
-    GLTextur bodenTex;
+    private GLTextur blockTex;
+    private GLTextur bodenTex;
+    private GLTextur coinTex;
     private ScoreAnzeige score;
     public Vektor2 ende;
+
+    private GLTafel startschild;
+    private GLTafel endschild;
 
     public Irrgarten(int tiefe, int breite) {
         this(tiefe, breite, null, null);
@@ -19,6 +24,8 @@ public class Irrgarten {
         felder = new Element[tiefe][breite];
         sonderElemente = new Element[breite][tiefe];
         bodenTex = pBodenTex;
+        blockTex = pBlockTex;
+        coinTex = new GLTextur("./Texturen/Gold.jpg");
         double xOffset = breite * KANTENLAENGE / 2;
         double zOffset = tiefe * KANTENLAENGE / 2;
         for (int z = 0; z < tiefe; z++) {
@@ -77,6 +84,13 @@ public class Irrgarten {
                 setzeElement(x, z, ((Block) gibElement(x, z)).ersetzeAw());
             }
         }
+        for (i = 50; i > 0; i--) {
+            int x = (int) (Math.random() * (breite() - 2)) + 1;
+            int z = (int) (Math.random() * (tiefe() - 2)) + 1;
+            if (gibElement(x, z) instanceof Bodenplatte) {
+                sonderElemente[x][z] = new Coin((int) ((Bodenplatte) gibElement(x, z)).gibX(), (int) ((Bodenplatte) gibElement(x, z)).gibZ(), coinTex);
+            }
+        }
     }
 
     public int breite() {
@@ -89,7 +103,15 @@ public class Irrgarten {
 
     private Vektor2 generieren(int x, int z) {
         Vektor2 letztesRechts = null;
-        entferne(new Vektor2(0, 1));
+        //Eingang
+        Vektor2 eingang = new Vektor2(0, 1);
+        entferne(eingang);
+
+        startschild = new GLTafel(((Bodenplatte) gibElement(eingang)).gibX() - 25, 25, ((Bodenplatte) gibElement(eingang)).gibZ(), 50, 50, blockTex);
+        startschild.setzeText("Start", 17);
+        startschild.setzeTextfarbe(0, 1, 0);
+        startschild.drehe(0, 90, 0, startschild.gibPosition());
+
         ArrayDeque<VertagtePosition> positionQueue = new ArrayDeque<>();
         entferne(new Vektor2(x, z));
         for (Vektor2 richtung : Vektor2.zufaelligeRichtungen()) {
@@ -122,8 +144,15 @@ public class Irrgarten {
             }
             */
         }
-        entferne(letztesRechts.summe(new Vektor2(1, 0)));
-        return letztesRechts.summe(new Vektor2(1, 0));
+        //Ausgang
+        Vektor2 ausgang = letztesRechts.summe(new Vektor2(1, 0));
+        entferne(ausgang);
+
+        endschild = new GLTafel(((Bodenplatte) gibElement(ausgang)).gibX() + 25, 0, ((Bodenplatte) gibElement(ausgang)).gibZ(), 50, 50, blockTex);
+        endschild.setzeText("Ziel", 17);
+        endschild.setzeTextfarbe(0, 1, 0);
+        endschild.drehe(0, 270, 0, startschild.gibPosition());
+        return ausgang;
     }
 
     private boolean istSackgasse(Vektor2 position, Vektor2 richtung) {

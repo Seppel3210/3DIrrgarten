@@ -3,7 +3,6 @@ import GLOOP.GLTextur;
 import GLOOP.GLVektor;
 
 public class Bodenplatte extends Element {
-
     private GLTafel platte;
 
 
@@ -38,14 +37,16 @@ public class Bodenplatte extends Element {
     public GLTafel gibPlatte() {
         return platte;
     }
+
     public GLVektor gibPosition() {
         return platte.gibPosition();
     }
-    
-    public double gibX(){
+
+    public double gibX() {
         return platte.gibX();
     }
-    public double gibZ(){
+
+    public double gibZ() {
         return platte.gibZ();
     }
 }

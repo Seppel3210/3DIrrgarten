@@ -55,6 +55,7 @@ public class Spieler extends AniElement {
                     altePos.posImArray = pos;
                     pos = neuePos;
                     vor = -(int) Irrgarten.KANTENLAENGE;
+                    feld.coinPruef(pos);
                 }
             }
         }
